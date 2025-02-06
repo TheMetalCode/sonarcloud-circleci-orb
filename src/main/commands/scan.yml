@@ -12,25 +12,30 @@ parameters:
     description: the root of the project that should be analyzed (relative to the root directory of the repository)
     default: .
     type: string
-  executor_os:
+  executor_os_arch:
     description: |
-      Specify the OS of the executor. Supported options are: linux, macosx, or any.
-      If using an MacOS M1 (silicon) executor, please use `any`.
-    default: "linux"
+      Specify the OS and architecture of the executor. Supported options are: linux-x64, linux-aarch64, macosx-x64, macosx-aarch64, or any.
+      "any" should be selected as a fallback if your executor isn't listed, and a pre-installed JVM will be required.
+      The "aaarch64" options require sonar-scanner version 6.1.0.4477 or later.
+    default: "linux-x64"
     type: enum
-    enum: ["linux", "macosx", "any"]
+    enum: ["linux-x64", "linux-aarch64", "macosx-x64", "macosx-aarch64", "any"]
+  scanner_version:
+    description: the version of the sonar-scanner cli to use
+    default: "7.0.1.4817"
+    type: string
 steps:
   - run:
       name: Create cache directory if it doesn't exist
       command: mkdir -p /tmp/cache/scanner
   - restore_cache:
       keys:
-        - v<<parameters.cache_version>>-sonarcloud-scanner-5.0.1.3006
+        - v<<parameters.cache_version>>-sonarcloud-scanner-<< parameters.scanner_version >>
   - run:
       name: SonarCloud
       command: |
         set -e
-        VERSION=5.0.1.3006
+        VERSION=<< parameters.scanner_version >>
         SONAR_TOKEN=$<<parameters.sonar_token_variable_name>>
         SCANNER_DIRECTORY=/tmp/cache/scanner
         export SONAR_USER_HOME=$SCANNER_DIRECTORY/.sonar
@@ -61,5 +66,5 @@ steps:
       environment:
         SONARQUBE_SCANNER_PARAMS: '{"sonar.host.url":"https://sonarcloud.io"}'
   - save_cache:
-      key: v<<parameters.cache_version>>-sonarcloud-scanner-5.0.1.3006
+      key: v<<parameters.cache_version>>-sonarcloud-scanner-<< parameters.scanner_version >>
       paths: /tmp/cache/scanner
