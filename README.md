@@ -2,7 +2,7 @@
 Support of SonarScanner CLI in CircleCI
 
 ## SonarQube Cloud Orb
-The SonarQube Cloud Orb can be used with any linux based docker image that includes the command line tools `curl` and `unzip`.
+The SonarQube Cloud Orb can be used with any linux based docker image or MacOS executor that includes the command line tools `curl` and `unzip`.
 
 To connect to your SonarQube Cloud project on `sonarcloud.io` you need to setup an api token. We recommend to setup a CircleCI context in your organization named `sonarcloud` that contains a variable with key `SONAR_TOKEN` and the api token as the value.
 ### Usage examples
